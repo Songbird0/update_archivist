@@ -35,4 +35,4 @@ class ScaffoldingState(models.Model):
     """Represents the (compressed) scaffolding sum.
     
     Once uncompressed, the archivist will store the last blake2b sum to compare 
-    to the next zip."""
+    to the next zip sum."""
