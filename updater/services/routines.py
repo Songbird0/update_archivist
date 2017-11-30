@@ -10,9 +10,9 @@ import shutil
 import sys
 import zipfile
 
-from .. import models
-
 # Internal
+
+from .. import models
 
 # CONSTANTS
 USER_HOME = pathlib.Path.home()
