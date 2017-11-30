@@ -42,22 +42,23 @@ def build_project_root(*args):
             except(FileExistsError):
                 LOGGER.info("'{}' already exists. OK.".format(path))
 
-def its_time_to_update():
+def its_time_to_update(submitted_update_directory=SUBMITTED_UPDATE_DIRECTORY):
     """Returns `True` if there's a new update to apply, `False` otherwise.
 
-    While its running, this function will update the `zipped_scaffolding_sum` to
-    identify the production version and the new updates."""
+    While it is running, this function will update the `zipped_scaffolding_sum` field to
+    identify the production version and the new updates.
+    """
     # get SUBMITTED_UPDATE_DIRECTORY files/directories
-    number_of_directories = sum(1 for _ in SUBMITTED_UPDATE_DIRECTORY.iterdir())
+    number_of_directories = sum(1 for _ in submitted_update_directory.iterdir())
     if number_of_directories > 0:
-        for file in SUBMITTED_UPDATE_DIRECTORY.iterdir():
+        for file in submitted_update_directory.iterdir():
             if not zipfile.is_zipfile(file):
                 LOGGER.warning("The updater does support .zip resources only at this time.\n"
                                "Targeted file: {}".format(file))
             else:
                 # open and check the archive integrity (it must contain one single root directory).
                 # create temp directory
-                temp_directory = SUBMITTED_UPDATE_DIRECTORY / 'temp_check'
+                temp_directory = submitted_update_directory / 'temp_check'
                 temp_directory.mkdir(mode=600, exist_ok=True)
                 # extract the stuff
                 with zipfile.ZipFile(file) as compressed_update:
@@ -65,11 +66,19 @@ def its_time_to_update():
                 number_of_root_directories = sum(
                     1 for potential_dir in temp_directory.iterdir() if potential_dir.is_dir())
                 if number_of_root_directories == 0:
+                    try:
+                        shutil.rmtree(temp_directory)
+                    except Exception as e:
+                        LOGGER.error(e)
                     # raise an exception or log it and exit to avoid multiple
                     # root directories.
                     raise Exception(
                         '`{}` is empty. Your zip should contain a root directory.'.format(compressed_update))
                 if number_of_root_directories > 1:
+                    try:
+                        shutil.rmtree(temp_directory)
+                    except Exception as e:
+                        LOGGER.error(e)
                     raise Exception(
                         'Your archive contains too many root directories. The updater supports one single root directory.')
                 file_content = file.read_bytes()
@@ -81,6 +90,7 @@ def its_time_to_update():
                     else:
                         scaffolding_sum.zipped_scaffolding_sum = zip_sum
                         scaffolding_sum.save()
+                        return True
                 except models.ScaffoldingState.DoesNotExist:
                     # Matches when the updater is running for the first time.
                     first_sum = models.ScaffoldingState.objects.create(zipped_scaffolding_sum=zip_sum)
