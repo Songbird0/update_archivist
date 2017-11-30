@@ -47,6 +47,8 @@ def its_time_to_update(submitted_update_directory=SUBMITTED_UPDATE_DIRECTORY):
 
     While it is running, this function will update the `zipped_scaffolding_sum` field to
     identify the production version and the new updates.
+
+    **Note**: `its_time_to_update` will pick the first .zip archive returned by `iterdir()` method.
     """
     # get SUBMITTED_UPDATE_DIRECTORY files/directories
     number_of_directories = sum(1 for _ in submitted_update_directory.iterdir())
