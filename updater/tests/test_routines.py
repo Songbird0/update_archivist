@@ -35,7 +35,7 @@ class IdenticalSumTest(django.test.TestCase):
         zip_file_sum = hashlib.blake2b(zip_file.read_bytes()).hexdigest()
         # Should not throw AssertionError object.
         self.assertTrue(models.ScaffoldingState.objects.filter(zipped_scaffolding_sum=zip_file_sum).exists(), 'The last scaffolding sum isn\'t equal to \n{0} but instead \n{1}'.format(zip_file_sum, self.SUM))
-        self.assertFalse(updater.services.routines.its_time_to_update(submitted_update_directory=IDENTICAL_SUM_DIRECTORY))
+        self.assertTrue(updater.services.routines.its_time_to_update(submitted_update_directory=IDENTICAL_SUM_DIRECTORY) is None)
 
 class DifferentSumTest(django.test.TestCase):
     """Represents a comparison between two different blake2b sum.
@@ -52,4 +52,4 @@ class DifferentSumTest(django.test.TestCase):
         zip_file_sum = hashlib.blake2b(zip_file.read_bytes()).hexdigest()
         # Should not throw AssertionError object.
         self.assertFalse(models.ScaffoldingState.objects.filter(zipped_scaffolding_sum=zip_file_sum).exists(), 'The last scaffolding sum ({0}) should NOT be equal to zip file sum ({1}).'.format(self.SUM, zip_file_sum))
-        self.assertTrue(updater.services.routines.its_time_to_update(submitted_update_directory=DIFFERENT_SUM_DIRECTORY))
+        self.assertTrue(updater.services.routines.its_time_to_update(submitted_update_directory=DIFFERENT_SUM_DIRECTORY) is not None)

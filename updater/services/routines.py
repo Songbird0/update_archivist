@@ -43,7 +43,7 @@ def build_project_root(*args):
                 LOGGER.info("'{}' already exists. OK.".format(path))
 
 def its_time_to_update(submitted_update_directory=SUBMITTED_UPDATE_DIRECTORY):
-    """Returns `True` if there's a new update to apply, `False` otherwise.
+    """Returns the zip path if there's a new update to apply, `None` otherwise.
 
     While it is running, this function will update the `zipped_scaffolding_sum` field to
     identify the production version and the new updates.
@@ -86,20 +86,20 @@ def its_time_to_update(submitted_update_directory=SUBMITTED_UPDATE_DIRECTORY):
                 try:
                     scaffolding_sum = models.ScaffoldingState.objects.get(id=1)
                     if scaffolding_sum.zipped_scaffolding_sum == zip_sum:
-                        return False
+                        return None
                     else:
                         scaffolding_sum.zipped_scaffolding_sum = zip_sum
                         scaffolding_sum.save()
-                        return True
+                        return file
                 except models.ScaffoldingState.DoesNotExist:
                     # Matches when the updater is running for the first time.
                     first_sum = models.ScaffoldingState.objects.create(zipped_scaffolding_sum=zip_sum)
                     first_sum.save()
-                    return True
+                    return file
                 finally:
                     try:
                         shutil.rmtree(temp_directory)
                     except Exception as e:
                         LOGGER.error(e)
     else:
-        return False
+        return None
