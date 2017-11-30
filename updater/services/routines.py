@@ -20,7 +20,7 @@ UPDATER_HOME = USER_HOME / 'UpdateArchivist'
 DEPLOYED_UPDATE_DIRECTORY = UPDATER_HOME / 'production'
 SUBMITTED_UPDATE_DIRECTORY = UPDATER_HOME / 'submitted'
 LOGGING_CONFIGURATION = {
-    'format': '[{asctime}][{levelname}]:{message}',
+    'format': '|{name}|[{asctime}][{levelname}]:{message}',
     'datefmt': '%d/%m/%Y (%I:%M:%S) %p',
     'style': '{',
     'level': logging.DEBUG,
