@@ -10,10 +10,9 @@ class RemovedFile(models.Model):
 
 class AddedFile(models.Model):
     relative_path = models.CharField(max_length=255)
-    checksum = models.TextField()
 
     def __str__(self):
-        return "relative_path={0}, sum={1}".format(self.relative_path, self.checksum)
+        return "relative_path={0}".format(self.relative_path)
 
 
 class ModifiedFile(models.Model):
