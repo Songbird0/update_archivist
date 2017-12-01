@@ -10,9 +10,11 @@ import pathlib
 
 # Third party
 
+
 # Internal
 
 from . import routines
+from .. import models
 
 # CONSTANTS
 LOGGER = logging.getLogger(__name__)
@@ -73,3 +75,23 @@ class UpdateManager:
             return pathlib.Path(stringified_initial_path[new_root_index:])
         else:
             return None
+
+def database_is_empty():
+    """Returns `True` if there is at least one file present in database, `False` otherwise."""
+    return not no_removed_files() and not no_added_files() and not no_modified_files() and not no_unmodified_files()
+
+def no_removed_files():
+    """Returns `True` if there is at least one removed file, `False` otherwise."""
+    return models.RemovedFile.objects.all().exists()
+
+def no_added_files():
+    """Returns `True` if there is at least one added file, `False` otherwise."""
+    return models.AddedFile.objects.all().exists()
+
+def no_modified_files():
+    """Returns `True` if there is at least one modified file, `False` otherwise."""
+    return models.ModifiedFile.objects.all().exists()
+
+def no_unmodified_files():
+    """Returns `True` if there is at least one unmodified file, `False` otherwise."""
+    return models.UnmodifiedFile.objects.all().exists()
