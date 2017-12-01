@@ -5,6 +5,7 @@
 
 import hashlib
 import pathlib
+import unittest
 
 # Third party
 
@@ -57,3 +58,16 @@ class DifferentSumTest(django.test.TestCase):
         # Should not throw AssertionError object.
         self.assertFalse(updater.models.ScaffoldingState.objects.filter(zipped_scaffolding_sum=zip_file_sum).exists(), 'The last scaffolding sum ({0}) should NOT be equal to zip file sum ({1}).'.format(self.SUM, zip_file_sum))
         self.assertTrue(updater.services.routines.its_time_to_update(submitted_update_directory=DIFFERENT_SUM_DIRECTORY) is not None)
+
+class SuffixRemoving(unittest.TestCase):
+    def setUp(self):
+        print('Nothing to do here!')
+
+    def test_suffix_correctly_removed(self):
+        file_name = 'foo/bar/baz/bang.py'
+        result = updater.services.routines.remove_suffix(file_name, '.py')
+        self.assertEqual(result, 'foo/bar/baz/bang', "result is equal to '{}'.".format(result))
+    def test_mutiple_suffix_occurrences_correctly_removed(self):
+        another_file_name = 'foo.py/bar.py/baz.py/bang.py'
+        result = updater.services.routines.remove_suffix(another_file_name, '.py')
+        self.assertEqual(result, 'foo.py/bar.py/baz.py/bang', "result is equal to '{}'.".format(result))

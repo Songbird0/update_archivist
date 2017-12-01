@@ -42,6 +42,13 @@ def build_project_root(*args):
             except(FileExistsError):
                 LOGGER.info("'{}' already exists. OK.".format(path))
 
+def remove_suffix(your_string: str, suffix_to_remove: str) -> str:
+    if your_string.endswith(suffix_to_remove):
+        suffix_index = your_string.rindex(suffix_to_remove)
+        return your_string[:suffix_index]
+    else:
+        raise Exception('Your string is not suffixed by "{}".'.format(suffix_to_remove))
+
 def its_time_to_update(submitted_update_directory=SUBMITTED_UPDATE_DIRECTORY):
     """Returns the zip path if there's a new update to apply, `None` otherwise.
 
@@ -95,7 +102,12 @@ def its_time_to_update(submitted_update_directory=SUBMITTED_UPDATE_DIRECTORY):
                         return file
                 except models.ScaffoldingState.DoesNotExist:
                     # Matches when the updater is running for the first time.
-                    first_sum = models.ScaffoldingState.objects.create(zipped_scaffolding_sum=zip_sum)
+                    if file.suffix:
+                        first_sum = models.ScaffoldingState.objects.create(
+                            project_name=remove_suffix(file, file.suffix), zipped_scaffolding_sum=zip_sum)
+                    else:
+                        first_sum = models.ScaffoldingState.objects.create(
+                            project_name=file.name, zipped_scaffolding_sum=zip_sum)
                     first_sum.save()
                     return file
                 finally:
