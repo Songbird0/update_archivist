@@ -31,6 +31,7 @@ class UnmodifiedFile(models.Model):
         return "relative_path={0}, sum={1}".format(self.relative_path, self.checksum)
 
 class ScaffoldingState(models.Model):
+    project_name = models.CharField(max_length=200)
     zipped_scaffolding_sum = models.TextField()
     """Represents the (compressed) scaffolding sum.
     
